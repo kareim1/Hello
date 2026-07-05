@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Admin - MLBB Skin Injector</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        :root {
+            --bg: #0a0e1a;
+            --bg-card: #12182b;
+            --bg-light: #1a2340;
+            --bg-hover: #243458;
+            --cyan: #00d4ff;
+            --cyan-glow: rgba(0, 212, 255, 0.4);
+            --cyan-dim: rgba(0, 212, 255, 0.15);
+            --pink: #ff2d78;
+            --pink-dim: rgba(255, 45, 120, 0.15);
+            --green: #00e676;
+            --green-dim: rgba(0, 230, 118, 0.2);
+            --blue: #448aff;
+            --blue-glow: rgba(68, 138, 255, 0.4);
+            --yellow: #ffd600;
+            --text: #e8ecf1;
+            --text-dim: #6b7a9c;
+            --border: rgba(0, 212, 255, 0.2);
+        }
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .app { max-width: 600px; margin: 0 auto; }
+
+        /* ===== HOME ===== */
+        .home-page { padding: 20px 16px 30px; }
+        .home-header {
+            text-align: center;
+            padding: 30px 0 20px;
+        }
+        .home-header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 22px;
+            font-weight: 900;
+            color: var(--cyan);
+            text-shadow: 0 0 30px var(--cyan-glow);
+            letter-spacing: 2px;
+        }
+        .home-header p { color: var(--text-dim); font-size: 13px; margin-top: 6px; }
+
+        .search-box {
+            position: relative;
+            margin: 0 0 16px;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 14px 16px 14px 44px;
+            border-radius: 16px;
+            border: 2px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 15px;
+            outline: none;
+        }
+        .search-box input:focus { border-color: var(--cyan); box-shadow: 0 0 20px var(--cyan-dim); }
+        .search-box .icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-size: 16px; opacity: 0.5; }
+
+        .add-hero-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 16px;
+            border: 2px dashed var(--border);
+            background: transparent;
+            color: var(--cyan);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        .add-hero-btn:hover { border-color: var(--cyan); background: var(--cyan-dim); }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        .hero-item {
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+            position: relative;
+            padding-top: 8px;
+        }
+        .hero-item:active { transform: scale(0.95); }
+        .hero-img-wrap {
+            width: 90px; height: 90px;
+            margin: 0 auto 8px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            background: linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
+                        linear-gradient(135deg, var(--cyan), #0099cc) border-box;
+            padding: 3px;
+            transition: all 0.3s;
+        }
+        .hero-item:hover .hero-img-wrap { box-shadow: 0 0 25px var(--cyan-glow); transform: translateY(-3px); }
+        .hero-img-wrap img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
+        .hero-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .hero-delete {
+            position: absolute;
+            top: 0; right: 0;
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--pink), #d50000);
+            color: #fff;
+            border: 2px solid var(--bg);
+            font-size: 13px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            opacity: 1;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(255, 45, 120, 0.4);
+            transition: transform 0.2s;
+        }
+        .hero-delete:active { transform: scale(0.85); }
+
+        .loading-wrap { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .loading-circle {
+            width: 90px; height: 90px;
+            margin: 0 auto 8px;
+            border-radius: 50%;
+            background: linear-gradient(90deg, var(--bg-card), var(--bg-light), var(--bg-card));
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        .empty-home { text-align: center; padding: 60px 20px; color: var(--text-dim); }
+        .empty-home .icon { font-size: 50px; opacity: 0.4; margin-bottom: 12px; }
+
+        /* ===== DETAIL PANEL (slide-up) ===== */
+        .detail-page {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg, #0d1326, var(--bg));
+            z-index: 100;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .detail-page.active { transform: translateY(0); }
+        .detail-page::-webkit-scrollbar { width: 4px; }
+        .detail-page::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+        .detail-header {
+            padding: 20px 20px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .detail-hero-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            background: none;
+            border: none;
+            color: var(--text);
+            width: 100%;
+            outline: none;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.3s;
+            padding: 4px 0;
+        }
+        .detail-hero-name:focus { border-bottom-color: var(--cyan); }
+        .detail-close {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 45, 120, 0.15);
+            border: 2px solid rgba(255, 45, 120, 0.4);
+            color: var(--pink);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            margin-left: 12px;
+        }
+        .detail-close:active { transform: scale(0.9); }
+
+        .detail-body { flex: 1; padding: 0 16px 20px; }
+
+        /* Hero Image Input */
+        .hero-img-input-wrap {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .hero-img-input-wrap .preview-img-wrap {
+            width: 100px; height: 100px;
+            margin: 0 auto 10px;
+            border-radius: 50%;
+            border: 3px solid var(--cyan);
+            padding: 3px;
+            background: var(--bg-card);
+            box-shadow: 0 0 20px var(--cyan-dim);
+            position: relative;
+        }
+        .hero-img-input-wrap .preview-img-wrap img {
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+        }
+        .hero-img-input-wrap .preview-img-wrap.empty {
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-dim); font-size: 30px;
+        }
+        .hero-img-input-wrap input {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--bg-light);
+            color: var(--text);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 13px;
+            outline: none;
+            text-align: center;
+        }
+        .hero-img-input-wrap input:focus { border-color: var(--cyan); }
+
+        /* Preview Card */
+        .preview-card {
+            background: linear-gradient(145deg, rgba(18, 24, 43, 0.9), rgba(26, 35, 64, 0.6));
+            border: 2px solid var(--border);
+            border-radius: 24px;
+            padding: 20px 16px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        .preview-labels {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 14px;
+        }
+        .preview-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--cyan);
+            letter-spacing: 2px;
+        }
+        .preview-images {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 10px;
+        }
+        .preview-img-wrap {
+            width: 90px; height: 90px;
+            border-radius: 50%;
+            border: 3px solid var(--cyan);
+            padding: 3px;
+            background: var(--bg-card);
+            position: relative;
+            box-shadow: 0 0 15px var(--cyan-dim);
+            overflow: hidden;
+        }
+        .preview-img-wrap img {
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+        }
+        .preview-img-wrap.empty {
+            border-color: var(--text-dim);
+            box-shadow: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dim);
+            font-size: 28px;
+        }
+        .preview-arrow { font-size: 22px; color: var(--cyan); opacity: 0.6; }
+        .preview-names {
+            display: flex;
+            justify-content: space-around;
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+        .preview-names .selected { color: var(--cyan); font-weight: 600; }
+
+        /* Status */
+        .status-badge {
+            display: inline-block;
+            padding: 8px 24px;
+            border-radius: 30px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: fit-content;
+        }
+        .status-info {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(0, 153, 204, 0.05));
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            color: var(--cyan);
+        }
+        .status-warn {
+            background: linear-gradient(135deg, rgba(255, 214, 0, 0.1), rgba(255, 171, 0, 0.05));
+            border: 2px solid rgba(255, 214, 0, 0.3);
+            color: var(--yellow);
+        }
+
+        /* Section Title */
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-dim);
+            letter-spacing: 4px;
+            margin: 16px 0 10px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .section-title .add-btn {
+            font-size: 18px;
+            color: var(--cyan);
+            cursor: pointer;
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            background: var(--cyan-dim);
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .section-title .add-btn:active { transform: scale(0.9); background: rgba(0, 212, 255, 0.3); }
+
+        /* Scroll Row */
+        .scroll-row {
+            display: flex;
+            gap: 14px;
+            overflow-x: auto;
+            padding: 4px 4px 12px;
+            scrollbar-width: none;
+        }
+        .scroll-row::-webkit-scrollbar { display: none; }
+
+        .scroll-item {
+            text-align: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: transform 0.2s;
+            position: relative;
+            padding-top: 6px;
+        }
+        .scroll-item:active { transform: scale(0.92); }
+        .scroll-img-wrap {
+            width: 70px; height: 70px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            background: linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
+                        linear-gradient(135deg, var(--cyan), #0099cc) border-box;
+            padding: 3px;
+            margin-bottom: 6px;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .scroll-item.selected .scroll-img-wrap {
+            box-shadow: 0 0 20px var(--cyan-glow);
+            transform: scale(1.08);
+        }
+        .scroll-item.selected .scroll-name { color: var(--cyan); font-weight: 700; }
+        .scroll-img-wrap img {
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+        }
+        .scroll-name {
+            font-size: 11px;
+            color: var(--text-dim);
+            white-space: nowrap;
+            max-width: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin: 0 auto;
+        }
+
+        /* ALWAYS VISIBLE delete button for replacements */
+        .item-delete {
+            position: absolute;
+            top: -2px; right: -2px;
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--pink), #d50000);
+            color: #fff;
+            border: 2px solid var(--bg);
+            font-size: 10px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            opacity: 1;
+            z-index: 10;
+            box-shadow: 0 2px 6px rgba(255, 45, 120, 0.4);
+            transition: transform 0.2s;
+        }
+        .item-delete:active { transform: scale(0.85); }
+
+        /* Skin Action Buttons - ALWAYS VISIBLE */
+        .skin-actions {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            margin-top: 6px;
+            opacity: 1;
+        }
+        .skin-action-btn {
+            width: 26px; height: 26px;
+            border-radius: 50%;
+            border: none;
+            font-size: 12px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        .skin-action-btn.copy-btn {
+            background: linear-gradient(135deg, var(--blue), #2962ff);
+            color: #fff;
+        }
+        .skin-action-btn.copy-btn:hover { background: #2979ff; transform: scale(1.1); }
+        .skin-action-btn.del-btn {
+            background: linear-gradient(135deg, var(--pink), #d50000);
+            color: #fff;
+        }
+        .skin-action-btn.del-btn:hover { background: #ff1744; transform: scale(1.1); }
+        .skin-action-btn:active { transform: scale(0.9); }
+
+        .scroll-item.add-item .scroll-img-wrap {
+            border: 2px dashed var(--border);
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--cyan);
+            font-size: 24px;
+        }
+
+        /* Edit Form (appears below selected item) */
+        .edit-form {
+            background: linear-gradient(145deg, rgba(18,24,43,0.8), rgba(26,35,64,0.5));
+            border: 1.5px solid var(--border);
+            border-radius: 16px;
+            padding: 14px;
+            margin: 10px 0 16px;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        .edit-form-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            color: var(--cyan);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .edit-form-title .close-form {
+            width: 24px; height: 24px;
+            border-radius: 50%;
+            background: var(--pink-dim);
+            border: 1px solid rgba(255,45,120,0.3);
+            color: var(--pink);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        .edit-form-title .close-form:hover { background: rgba(255,45,120,0.3); }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .form-row input, .form-row-full input {
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--bg-light);
+            color: var(--text);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 13px;
+            outline: none;
+        }
+        .form-row input:focus, .form-row-full input:focus { border-color: var(--cyan); }
+        .form-row-full { grid-template-columns: 1fr; }
+        .form-row-full input { width: 100%; margin-bottom: 8px; }
+        .form-row-full input:last-child { margin-bottom: 0; }
+
+        /* Save Button */
+        .save-btn {
+            width: calc(100% - 32px);
+            margin: 10px 16px 30px;
+            padding: 16px;
+            border-radius: 20px;
+            border: none;
+            background: linear-gradient(135deg, var(--green), #00c853);
+            color: #000;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 20px rgba(0, 230, 118, 0.3);
+            transition: all 0.3s;
+            position: sticky;
+            bottom: 20px;
+        }
+        .save-btn:active { transform: scale(0.98); }
+
+        /* ===== COPY SKINS SECTION - IMPROVED ===== */
+        .copy-skins-section {
+            background: linear-gradient(145deg, rgba(68, 138, 255, 0.1), rgba(68, 138, 255, 0.05));
+            border: 1.5px solid rgba(68, 138, 255, 0.3);
+            border-radius: 16px;
+            padding: 14px;
+            margin: 10px 0 16px;
+            animation: fadeIn 0.3s ease;
+        }
+        .copy-skins-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            color: var(--blue);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .copy-skins-title .close-form {
+            width: 24px; height: 24px;
+            border-radius: 50%;
+            background: rgba(255, 45, 120, 0.15);
+            border: 1px solid rgba(255, 45, 120, 0.3);
+            color: var(--pink);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        .copy-skins-title .close-form:hover { background: rgba(255, 45, 120, 0.3); }
+        .copy-skins-desc {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-bottom: 12px;
+        }
+        .copy-skins-list {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 4px 4px 12px;
+            scrollbar-width: none;
+            margin-bottom: 12px;
+        }
+        .copy-skins-list::-webkit-scrollbar { display: none; }
+        .copy-skin-card {
+            flex-shrink: 0;
+            width: 80px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s;
+            position: relative;
+            padding: 4px;
+            border-radius: 14px;
+            border: 2px solid transparent;
+            background: var(--bg-light);
+        }
+        .copy-skin-card:hover { transform: translateY(-2px); border-color: rgba(68, 138, 255, 0.3); }
+        .copy-skin-card.selected {
+            border-color: var(--blue);
+            background: linear-gradient(145deg, rgba(68, 138, 255, 0.15), rgba(68, 138, 255, 0.05));
+            box-shadow: 0 0 15px rgba(68, 138, 255, 0.2);
+        }
+        .copy-skin-card .card-img-wrap {
+            width: 56px; height: 56px;
+            margin: 0 auto 6px;
+            border-radius: 50%;
+            border: 2px solid rgba(68, 138, 255, 0.4);
+            padding: 2px;
+            background: var(--bg-card);
+            position: relative;
+        }
+        .copy-skin-card.selected .card-img-wrap {
+            border-color: var(--blue);
+            box-shadow: 0 0 12px rgba(68, 138, 255, 0.3);
+        }
+        .copy-skin-card .card-img-wrap img {
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+        }
+        .copy-skin-card .card-name {
+            font-size: 10px;
+            color: var(--text-dim);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: 600;
+        }
+        .copy-skin-card.selected .card-name { color: var(--blue); }
+        .copy-skin-card .card-count {
+            font-size: 9px;
+            color: var(--text-dim);
+            opacity: 0.7;
+            margin-top: 2px;
+        }
+        .copy-skin-card .card-check {
+            position: absolute;
+            top: 2px; right: 2px;
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            background: var(--blue);
+            color: #fff;
+            font-size: 10px;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+            border: 2px solid var(--bg);
+        }
+        .copy-skin-card.selected .card-check { opacity: 1; }
+        .copy-skins-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .copy-skins-btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, var(--blue), #2962ff);
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 15px rgba(68, 138, 255, 0.3);
+            flex: 1;
+            justify-content: center;
+        }
+        .copy-skins-btn:hover { background: #2979ff; transform: translateY(-1px); }
+        .copy-skins-btn:active { transform: scale(0.95); }
+        .copy-skins-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ===== ROLE SELECTOR ===== */
+        .role-section { margin-bottom: 16px; }
+        .role-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .role-item {
+            padding: 12px 8px;
+            border-radius: 14px;
+            border: 2px solid var(--border);
+            background: var(--bg-light);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .role-item:hover { border-color: var(--cyan); }
+        .role-item.selected {
+            border-color: var(--cyan);
+            background: linear-gradient(135deg, var(--cyan-dim), rgba(0, 212, 255, 0.05));
+            box-shadow: 0 0 15px var(--cyan-dim);
+        }
+        .role-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+            display: block;
+        }
+        .role-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+        }
+        .role-item.selected .role-name { color: var(--cyan); }
+        .role-check {
+            position: absolute;
+            top: 4px; right: 4px;
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            background: var(--cyan);
+            color: #000;
+            font-size: 10px;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .role-item.selected .role-check { opacity: 1; }
+
+        /* ===== BOTTOM TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            padding: 14px 28px;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 14px;
+            z-index: 500;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+            pointer-events: none;
+            white-space: nowrap;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            max-width: 90vw;
+            text-align: center;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        /* iPhone notch safe area */
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .toast { bottom: calc(40px + env(safe-area-inset-bottom)); }
+        }
+
+        /* PC - wider toast */
+        @media (min-width: 768px) {
+            .toast {
+                padding: 16px 40px;
+                font-size: 15px;
+                border-radius: 20px;
+                bottom: 60px;
+            }
+        }
+        .toast-success {
+            background: linear-gradient(135deg, rgba(0, 230, 118, 0.15), rgba(0, 200, 83, 0.1));
+            border: 1.5px solid rgba(0, 230, 118, 0.3);
+            color: var(--green);
+            backdrop-filter: blur(10px);
+        }
+        .toast-error {
+            background: linear-gradient(135deg, rgba(255, 45, 120, 0.15), rgba(204, 34, 68, 0.1));
+            border: 1.5px solid rgba(255, 45, 120, 0.3);
+            color: var(--pink);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Confirm Modal */
+        .confirm-modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(6px);
+            z-index: 400;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .confirm-modal.active { opacity: 1; pointer-events: auto; }
+        .confirm-box {
+            background: linear-gradient(145deg, var(--bg-card), #0f1520);
+            border: 2px solid var(--border);
+            border-radius: 24px;
+            padding: 28px;
+            max-width: 300px;
+            width: 90%;
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+        .confirm-modal.active .confirm-box { transform: scale(1); }
+        .confirm-icon { font-size: 48px; margin-bottom: 12px; }
+        .confirm-title { font-family: 'Orbitron', sans-serif; font-size: 18px; color: var(--pink); margin-bottom: 8px; }
+        .confirm-text { color: var(--text-dim); font-size: 14px; margin-bottom: 20px; }
+        .confirm-actions { display: flex; gap: 10px; }
+        .confirm-actions .btn { flex: 1; padding: 12px; border-radius: 12px; border: none; font-family: 'Orbitron'; font-size: 12px; font-weight: 700; cursor: pointer; }
+        .btn-confirm-del { background: linear-gradient(135deg, var(--pink), #cc2244); color: #fff; }
+        .btn-cancel { background: var(--bg-light); color: var(--text); }
+
+        /* ===== ROLE FILTER ===== */
+        .role-filter {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 4px 0;
+            margin-bottom: 16px;
+            scrollbar-width: none;
+        }
+        .role-filter::-webkit-scrollbar { display: none; }
+        .role-filter-item {
+            padding: 8px 14px;
+            border-radius: 20px;
+            border: 2px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-dim);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+        .role-filter-item.active {
+            background: linear-gradient(135deg, var(--cyan), #0099cc);
+            color: #000;
+            border-color: var(--cyan);
+            box-shadow: 0 0 15px var(--cyan-dim);
+        }
+        .role-filter-item:hover:not(.active) {
+            border-color: var(--cyan);
+            color: var(--cyan);
+        }
+
+        @media (max-width: 380px) {
+            .hero-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+            .hero-img-wrap { width: 80px; height: 80px; }
+            .preview-img-wrap { width: 80px; height: 80px; }
+            .scroll-img-wrap { width: 60px; height: 60px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- HOME -->
+        <div class="home-page" id="homePage">
+            <div class="home-header">
+                <h1>⚙️ ADMIN PANEL</h1>
+                <p>Manage heroes, skins & scripts</p>
+            </div>
+            <div class="search-box">
+                <span class="icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Search hero..." oninput="filterHeroes()">
+            </div>
+            <!-- Role Filter -->
+            <div class="role-filter" id="roleFilter">
+                <div class="role-filter-item active" data-role="" onclick="filterByRole(this)">ALL</div>
+                <div class="role-filter-item" data-role="marksman" onclick="filterByRole(this)">🏹 MARKSMAN</div>
+                <div class="role-filter-item" data-role="fighter" onclick="filterByRole(this)">⚔️ FIGHTER</div>
+                <div class="role-filter-item" data-role="assassin" onclick="filterByRole(this)">🗡️ ASSASSIN</div>
+                <div class="role-filter-item" data-role="tank" onclick="filterByRole(this)">🛡️ TANK</div>
+                <div class="role-filter-item" data-role="mage" onclick="filterByRole(this)">🔮 MAGE</div>
+                <div class="role-filter-item" data-role="support" onclick="filterByRole(this)">💚 SUPPORT</div>
+            </div>
+
+            <button class="add-hero-btn" onclick="openAddHero()">
+                <span>➕</span> ADD NEW HERO
+            </button>
+            <div class="loading-wrap" id="heroGrid">
+                <div><div class="loading-circle"></div></div>
+                <div><div class="loading-circle"></div></div>
+                <div><div class="loading-circle"></div></div>
+                <div><div class="loading-circle"></div></div>
+                <div><div class="loading-circle"></div></div>
+                <div><div class="loading-circle"></div></div>
+            </div>
+            <div class="empty-home" id="emptyHome" style="display:none;">
+                <div class="icon">🎮</div>
+                <p>No heroes yet. Click "Add New Hero"</p>
+            </div>
+        </div>
+
+        <!-- DETAIL PANEL -->
+        <div class="detail-page" id="detailPage">
+            <div class="detail-header">
+                <input type="text" class="detail-hero-name" id="detailHeroName" placeholder="Hero Name">
+                <div class="detail-close" onclick="closeDetail()">✕</div>
+            </div>
+            <div class="detail-body" id="detailBody">
+                <!-- Hero Image -->
+                <div class="hero-img-input-wrap">
+                    <div class="preview-img-wrap empty" id="heroPreviewWrap">
+                        <span id="heroPreviewPlaceholder">🎮</span>
+                    </div>
+                    <input type="text" id="heroImageUrl" placeholder="Hero Image URL" onchange="updateHeroPreview(this.value)">
+                </div>
+
+                <!-- Role Selector -->
+                <div class="role-section">
+                    <div class="section-title" style="margin-top:0;">⚔️ ROLE</div>
+                    <div class="role-grid" id="roleGrid">
+                        <div class="role-item" data-role="marksman" onclick="selectRole(this)">
+                            <span class="role-check">✓</span>
+                            <span class="role-icon">🏹</span>
+                            <span class="role-name">MARKSMAN</span>
+                        </div>
+                        <div class="role-item" data-role="fighter" onclick="selectRole(this)">
+                            <span class="role-check">✓</span>
+                            <span class="role-icon">⚔️</span>
+                            <span class="role-name">FIGHTER</span>
+                        </div>
+                        <div class="role-item" data-role="assassin" onclick="selectRole(this)">
+                            <span class="role-check">✓</span>
+                            <span class="role-icon">🗡️</span>
+                            <span class="role-name">ASSASSIN</span>
+                        </div>
+                        <div class="role-item" data-role="tank" onclick="selectRole(this)">
+                            <span class="role-check">✓</span>
+                            <span class="role-icon">🛡️</span>
+                            <span class="role-name">TANK</span>
+                        </div>
+                        <div class="role-item" data-role="mage" onclick="selectRole(this)">
+                            <span class="role-check">✓</span>
+                            <span class="role-icon">🔮</span>
+                            <span class="role-name">MAGE</span>
+                        </div>
+                        <div class="role-item" data-role="support" onclick="selectRole(this)">
+                            <span class="role-check">✓</span>
+                            <span class="role-icon">💚</span>
+                            <span class="role-name">SUPPORT</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview Card -->
+                <div class="preview-card">
+                    <div class="preview-labels">
+                        <div class="preview-label">REPLACEMENT</div>
+                        <div class="preview-label">SKIN</div>
+                    </div>
+                    <div class="preview-images">
+                        <div class="preview-img-wrap empty" id="previewRep">
+                            <span>🔄</span>
+                        </div>
+                        <div class="preview-arrow">›</div>
+                        <div class="preview-img-wrap empty" id="previewSkin">
+                            <span>🎨</span>
+                        </div>
+                    </div>
+                    <div class="preview-names">
+                        <div id="previewRepName">Select</div>
+                        <div id="previewSkinName">Select</div>
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div class="status-badge status-info" id="statusBadge">
+                    <span>ℹ️</span> Select a replacement to edit
+                </div>
+
+                <!-- Replacements -->
+                <div class="section-title">
+                    REPLACEMENTS
+                    <span class="add-btn" onclick="addReplacement()">+</span>
+                </div>
+                <div class="scroll-row" id="replacementsRow"></div>
+                <div id="repEditForm"></div>
+
+                <!-- Skins -->
+                <div class="section-title" id="skinsTitle" style="display:none;">
+                    SKINS
+                    <span class="add-btn" onclick="addSkin()">+</span>
+                </div>
+                <div class="scroll-row" id="skinsRow" style="display:none;"></div>
+
+                <!-- Copy Skins Section (appears when replacement selected) -->
+                <div id="copySkinsSection"></div>
+
+                <div id="skinEditForm"></div>
+            </div>
+            <button class="save-btn" id="saveBtn" onclick="saveHero()">
+                <span>💾</span> SAVE HERO
+            </button>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div class="confirm-modal" id="confirmModal">
+        <div class="confirm-box">
+            <div class="confirm-icon">🗑️</div>
+            <div class="confirm-title">Delete?</div>
+            <div class="confirm-text" id="confirmText">Are you sure?</div>
+            <div class="confirm-actions">
+                <button class="btn btn-confirm-del" onclick="confirmDelete()">Delete</button>
+                <button class="btn btn-cancel" onclick="closeConfirm()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB_MN0BEW4jencjrF6--mTs73vxJXAD6zo",
+            authDomain: "mlbb-skins-59453.firebaseapp.com",
+            projectId: "mlbb-skins-59453",
+            storageBucket: "mlbb-skins-59453.firebasestorage.app",
+            messagingSenderId: "678503432843",
+            appId: "1:678503432843:web:e594c51b8869c060d08a8e",
+            measurementId: "G-2NHCLHJ5Y0"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        let heroes = [];
+        let currentHero = null;
+        let isAddMode = false;
+        let selectedRepIndex = -1;
+        let selectedSkinIndex = -1;
+        let deleteTarget = null; // { type: 'hero'|'rep'|'skin', id, extra }
+
+        const heroesRef = collection(db, "heroes");
+        const heroesQuery = query(heroesRef, orderBy("name", "asc"));
+
+        onSnapshot(heroesQuery, (snapshot) => {
+            heroes = [];
+            snapshot.forEach((doc) => { heroes.push({ id: doc.id, ...doc.data() }); });
+            renderHeroGrid();
+        });
+
+        // ===== HOME =====
+        function renderHeroGrid() {
+    const grid = document.getElementById('heroGrid');
+    const empty = document.getElementById('emptyHome');
+    const search = document.getElementById('searchInput').value.trim().toLowerCase();
+
+    let filtered = heroes;
+
+    // فلترة البحث
+    if (search) {
+        filtered = filtered.filter(h => h.name.toLowerCase().includes(search));
+    }
+
+    // فلترة الـ Role (اللي كانت ناقصة!)
+    if (activeRoleFilter) {
+        filtered = filtered.filter(h => (h.role || '').toLowerCase() === activeRoleFilter.toLowerCase());
+    }
+
+    if (filtered.length === 0) {
+        grid.style.display = 'none';
+        empty.style.display = 'block';
+        return;
+            }
+            grid.style.display = 'grid';
+            grid.className = 'hero-grid';
+            empty.style.display = 'none';
+
+            grid.innerHTML = filtered.map(h => `
+                <div class="hero-item" onclick="openEditHero('${h.id}')">
+                    <button class="hero-delete" onclick="event.stopPropagation(); showDeleteConfirm('hero', '${h.id}', '${h.name.replace(/'/g, "\'")}')">✕</button>
+                    <div class="hero-img-wrap">
+                        <img src="${h.image || ''}" onerror="this.src='https://via.placeholder.com/90?text=?'" alt="${h.name}">
+                    </div>
+                    <div class="hero-name">${h.name}</div>
+                    ${h.role ? `<div style="font-size:10px;color:var(--cyan);margin-top:2px;text-transform:uppercase;letter-spacing:1px;">${h.role}</div>` : ''}
+                </div>
+            `).join('');
+        }
+        window.renderHeroGrid = renderHeroGrid;
+        window.filterHeroes = function() { renderHeroGrid(); };
+
+        let activeRoleFilter = '';
+
+        window.filterByRole = function(el) {
+            document.querySelectorAll('.role-filter-item').forEach(r => r.classList.remove('active'));
+            el.classList.add('active');
+            activeRoleFilter = el.dataset.role;
+            console.log('Filter selected:', activeRoleFilter);
+            console.log('Heroes:', heroes.map(h => ({name: h.name, role: h.role})));
+            renderHeroGrid();
+        };
+
+        let selectedRole = '';
+
+        window.selectRole = function(el) {
+            document.querySelectorAll('.role-item').forEach(r => r.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedRole = el.dataset.role;
+        };
+
+        // ===== OPEN DETAIL =====
+        window.openAddHero = function() {
+            isAddMode = true;
+            currentHero = { name: '', image: '', role: '', replacements: [] };
+            selectedRepIndex = -1;
+            selectedSkinIndex = -1;
+            selectedRole = '';
+            document.getElementById('detailHeroName').value = '';
+            document.getElementById('heroImageUrl').value = '';
+            updateHeroPreview('');
+            document.querySelectorAll('.role-item').forEach(r => r.classList.remove('selected'));
+            resetPreviewCard();
+            renderReplacements();
+            hideSkins();
+            updateStatus('info', 'ℹ️', 'Add replacements and skins below');
+            document.getElementById('detailPage').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.openEditHero = function(heroId) {
+            isAddMode = false;
+            currentHero = heroes.find(h => h.id === heroId);
+            if (!currentHero) return;
+            selectedRepIndex = -1;
+            selectedSkinIndex = -1;
+            selectedRole = currentHero.role || '';
+            document.getElementById('detailHeroName').value = currentHero.name || '';
+            document.getElementById('heroImageUrl').value = currentHero.image || '';
+            updateHeroPreview(currentHero.image || '');
+            document.querySelectorAll('.role-item').forEach(r => {
+                r.classList.toggle('selected', r.dataset.role === selectedRole);
+            });
+            resetPreviewCard();
+            renderReplacements();
+            hideSkins();
+            updateStatus('info', 'ℹ️', 'Select a replacement to edit');
+            document.getElementById('detailPage').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.closeDetail = function() {
+            document.getElementById('detailPage').classList.remove('active');
+            document.body.style.overflow = '';
+            currentHero = null;
+            selectedRepIndex = -1;
+            selectedSkinIndex = -1;
+            document.getElementById('repEditForm').innerHTML = '';
+            document.getElementById('skinEditForm').innerHTML = '';
+            document.getElementById('copySkinsSection').innerHTML = '';
+        };
+
+        // ===== HERO PREVIEW =====
+        window.updateHeroPreview = function(url) {
+            const wrap = document.getElementById('heroPreviewWrap');
+            const ph = document.getElementById('heroPreviewPlaceholder');
+            if (url) {
+                wrap.innerHTML = `<img src="${url}" onerror="this.parentElement.innerHTML='<span>🎮</span>'; this.parentElement.className='preview-img-wrap empty'">`;
+                wrap.className = 'preview-img-wrap';
+            } else {
+                wrap.innerHTML = '<span>🎮</span>';
+                wrap.className = 'preview-img-wrap empty';
+            }
+        };
+
+        // ===== PREVIEW CARD =====
+        function resetPreviewCard() {
+            document.getElementById('previewRep').innerHTML = '<span>🔄</span>';
+            document.getElementById('previewRep').className = 'preview-img-wrap empty';
+            document.getElementById('previewSkin').innerHTML = '<span>🎨</span>';
+            document.getElementById('previewSkin').className = 'preview-img-wrap empty';
+            document.getElementById('previewRepName').textContent = 'Select';
+            document.getElementById('previewRepName').className = '';
+            document.getElementById('previewSkinName').textContent = 'Select';
+            document.getElementById('previewSkinName').className = '';
+        }
+
+        function updatePreviewCard() {
+            const rep = selectedRepIndex >= 0 && currentHero.replacements ? currentHero.replacements[selectedRepIndex] : null;
+            const skin = selectedSkinIndex >= 0 && rep && rep.skins ? rep.skins[selectedSkinIndex] : null;
+
+            const repEl = document.getElementById('previewRep');
+            const skinEl = document.getElementById('previewSkin');
+            const repNameEl = document.getElementById('previewRepName');
+            const skinNameEl = document.getElementById('previewSkinName');
+
+            if (rep) {
+                repEl.innerHTML = `<img src="${rep.image || ''}" onerror="this.parentElement.innerHTML='<span>🔄</span>'; this.parentElement.className='preview-img-wrap empty'">`;
+                repEl.className = 'preview-img-wrap';
+                repNameEl.textContent = rep.name;
+                repNameEl.className = 'selected';
+            }
+            if (skin) {
+                skinEl.innerHTML = `<img src="${skin.image || ''}" onerror="this.parentElement.innerHTML='<span>🎨</span>'; this.parentElement.className='preview-img-wrap empty'">`;
+                skinEl.className = 'preview-img-wrap';
+                skinNameEl.textContent = skin.name;
+                skinNameEl.className = 'selected';
+            }
+        }
+
+        function updateStatus(type, icon, text) {
+            const badge = document.getElementById('statusBadge');
+            badge.className = 'status-badge status-' + type;
+            badge.innerHTML = `<span>${icon}</span> ${text}`;
+        }
+
+        // ===== REPLACEMENTS =====
+        function renderReplacements() {
+            const row = document.getElementById('replacementsRow');
+            if (!currentHero || !currentHero.replacements || currentHero.replacements.length === 0) {
+                row.innerHTML = '<div style="color:var(--text-dim);padding:10px;font-size:13px;">No replacements yet. Click + to add.</div>';
+                return;
+            }
+            row.innerHTML = currentHero.replacements.map((rep, idx) => `
+                <div class="scroll-item ${selectedRepIndex === idx ? 'selected' : ''}" onclick="selectRep(${idx})">
+                    <button class="item-delete" onclick="event.stopPropagation(); showDeleteConfirm('rep', ${idx}, '${rep.name.replace(/'/g, "\'")}')">✕</button>
+                    <div class="scroll-img-wrap">
+                        <img src="${rep.image || ''}" onerror="this.src='https://via.placeholder.com/70?text=?'" alt="${rep.name}">
+                    </div>
+                    <div class="scroll-name">${rep.name}</div>
+                </div>
+            `).join('') + `
+                <div class="scroll-item add-item" onclick="addReplacement()">
+                    <div class="scroll-img-wrap">+</div>
+                    <div class="scroll-name">Add</div>
+                </div>
+            `;
+        }
+
+        window.selectRep = function(idx) {
+            selectedRepIndex = idx;
+            selectedSkinIndex = -1;
+            document.getElementById('skinEditForm').innerHTML = '';
+            renderReplacements();
+            renderSkins();
+            updatePreviewCard();
+            showRepEditForm(idx);
+            showCopySkinsSection(idx);
+            updateStatus('info', 'ℹ️', 'Editing: ' + (currentHero.replacements[idx].name || 'Unnamed'));
+        };
+
+        function showRepEditForm(idx) {
+            const rep = currentHero.replacements[idx];
+            const form = document.getElementById('repEditForm');
+            form.innerHTML = `
+                <div class="edit-form">
+                    <div class="edit-form-title">
+                        🔄 Edit Replacement
+                        <span class="close-form" onclick="document.getElementById('repEditForm').innerHTML=''">✕</span>
+                    </div>
+                    <div class="form-row">
+                        <input type="text" placeholder="ID (e.g. default)" id="editRepId" value="${rep.id || ''}">
+                        <input type="text" placeholder="Name (e.g. Default)" id="editRepName" value="${rep.name || ''}">
+                    </div>
+                    <div class="form-row-full">
+                        <input type="text" placeholder="Image URL" id="editRepImage" value="${rep.image || ''}" onchange="updateRepPreviewFromForm()">
+                    </div>
+                </div>
+            `;
+        }
+
+        window.updateRepPreviewFromForm = function() {
+            if (selectedRepIndex < 0) return;
+            const url = document.getElementById('editRepImage').value;
+            currentHero.replacements[selectedRepIndex].image = url;
+            renderReplacements();
+            updatePreviewCard();
+        };
+
+        window.addReplacement = function() {
+            if (!currentHero.replacements) currentHero.replacements = [];
+            currentHero.replacements.push({ id: '', name: '', image: '', skins: [] });
+            selectedRepIndex = currentHero.replacements.length - 1;
+            selectedSkinIndex = -1;
+            document.getElementById('skinEditForm').innerHTML = '';
+            renderReplacements();
+            renderSkins();
+            updatePreviewCard();
+            showRepEditForm(selectedRepIndex);
+            showCopySkinsSection(selectedRepIndex);
+            updateStatus('info', 'ℹ️', 'New replacement added. Fill details below.');
+            // Scroll to the new item
+            setTimeout(() => {
+                const row = document.getElementById('replacementsRow');
+                row.scrollLeft = row.scrollWidth;
+            }, 100);
+        };
+
+        // ===== COPY SKINS SECTION =====
+        function showCopySkinsSection(currentIdx) {
+            const container = document.getElementById('copySkinsSection');
+            if (!currentHero.replacements || currentHero.replacements.length <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            // Get other replacements that have skins
+            const otherReps = currentHero.replacements
+                .map((rep, idx) => ({ rep, idx }))
+                .filter(item => item.idx !== currentIdx && item.rep.skins && item.rep.skins.length > 0);
+
+            if (otherReps.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+
+            const cards = otherReps.map(item => `
+                <div class="copy-skin-card" data-idx="${item.idx}" onclick="selectCopySource(this, ${item.idx})">
+                    <div class="card-check">✓</div>
+                    <div class="card-img-wrap">
+                        <img src="${item.rep.image || ''}" onerror="this.src='https://via.placeholder.com/56?text=?'">
+                    </div>
+                    <div class="card-name">${item.rep.name || 'Unnamed'}</div>
+                    <div class="card-count">${item.rep.skins.length} skins</div>
+                </div>
+            `).join('');
+
+            container.innerHTML = `
+                <div class="copy-skins-section">
+                    <div class="copy-skins-title">
+                        📋 Copy Skins From
+                        <span class="close-form" onclick="document.getElementById('copySkinsSection').innerHTML=''">✕</span>
+                    </div>
+                    <div class="copy-skins-desc">Tap a replacement below, then hit COPY</div>
+                    <div class="copy-skins-list" id="copySkinsList">
+                        ${cards}
+                    </div>
+                    <div class="copy-skins-actions">
+                        <button class="copy-skins-btn" id="copySkinsBtn" onclick="copySkinsToCurrent()" disabled>
+                            <span>📋</span> COPY SKINS
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        let selectedCopySourceIdx = -1;
+
+        window.selectCopySource = function(el, idx) {
+            document.querySelectorAll('.copy-skin-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedCopySourceIdx = idx;
+            const btn = document.getElementById('copySkinsBtn');
+            if (btn) btn.disabled = false;
+        };
+
+        window.copySkinsToCurrent = function() {
+            if (selectedRepIndex < 0) return;
+            if (selectedCopySourceIdx < 0) {
+                showToast('Select a source replacement first!', 'error');
+                return;
+            }
+
+            const sourceRep = currentHero.replacements[selectedCopySourceIdx];
+            if (!sourceRep.skins || sourceRep.skins.length === 0) {
+                showToast('No skins to copy!', 'error');
+                return;
+            }
+
+            const targetRep = currentHero.replacements[selectedRepIndex];
+            if (!targetRep.skins) targetRep.skins = [];
+
+            // Deep copy skins
+            const skinsToCopy = JSON.parse(JSON.stringify(sourceRep.skins));
+            targetRep.skins = [...targetRep.skins, ...skinsToCopy];
+
+            renderSkins();
+            selectedCopySourceIdx = -1;
+            showCopySkinsSection(selectedRepIndex);
+            showToast(`✅ Copied ${skinsToCopy.length} skins!`, 'success');
+            updateStatus('info', 'ℹ️', `Copied ${skinsToCopy.length} skins to ${targetRep.name || 'Unnamed'}`);
+        };
+
+        // ===== SKINS =====
+        function hideSkins() {
+            document.getElementById('skinsTitle').style.display = 'none';
+            document.getElementById('skinsRow').style.display = 'none';
+            document.getElementById('copySkinsSection').innerHTML = '';
+        }
+
+        function renderSkins() {
+            const title = document.getElementById('skinsTitle');
+            const row = document.getElementById('skinsRow');
+            if (selectedRepIndex < 0 || !currentHero.replacements || !currentHero.replacements[selectedRepIndex]) {
+                hideSkins();
+                return;
+            }
+            const rep = currentHero.replacements[selectedRepIndex];
+            title.style.display = 'flex';
+            row.style.display = 'flex';
+
+            if (!rep.skins || rep.skins.length === 0) {
+                row.innerHTML = '<div style="color:var(--text-dim);padding:10px;font-size:13px;">No skins yet. Click + to add.</div>';
+                return;
+            }
+            row.innerHTML = rep.skins.map((skin, idx) => `
+                <div class="scroll-item ${selectedSkinIndex === idx ? 'selected' : ''}" onclick="selectSkin(${idx})">
+                    <button class="item-delete" onclick="event.stopPropagation(); deleteSkinDirect(${idx})" style="top:-4px;right:-4px;width:20px;height:20px;font-size:10px;" title="Delete skin">✕</button>
+                    <div class="scroll-img-wrap">
+                        <img src="${skin.image || ''}" onerror="this.src='https://via.placeholder.com/70?text=?'" alt="${skin.name}">
+                    </div>
+                    <div class="scroll-name">${skin.name}</div>
+                </div>
+            `).join('') + `
+                <div class="scroll-item add-item" onclick="addSkin()">
+                    <div class="scroll-img-wrap">+</div>
+                    <div class="scroll-name">Add</div>
+                </div>
+            `;
+        }
+
+        window.selectSkin = function(idx) {
+            selectedSkinIndex = idx;
+            renderSkins();
+            updatePreviewCard();
+            showSkinEditForm(idx);
+            const skin = currentHero.replacements[selectedRepIndex].skins[idx];
+            updateStatus('info', 'ℹ️', 'Editing skin: ' + (skin.name || 'Unnamed'));
+        };
+
+        // Quick delete single skin
+        window.deleteSkinDirect = function(idx) {
+            if (selectedRepIndex < 0) return;
+            const skin = currentHero.replacements[selectedRepIndex].skins[idx];
+            showDeleteConfirm('skin', idx, skin.name || 'Unnamed');
+        };
+
+        function showSkinEditForm(idx) {
+            const skin = currentHero.replacements[selectedRepIndex].skins[idx];
+            const form = document.getElementById('skinEditForm');
+            form.innerHTML = `
+                <div class="edit-form">
+                    <div class="edit-form-title">
+                        🎨 Edit Skin
+                        <span class="close-form" onclick="document.getElementById('skinEditForm').innerHTML=''">✕</span>
+                    </div>
+                    <div class="form-row">
+                        <input type="text" placeholder="Skin ID" id="editSkinId" value="${skin.id || ''}">
+                        <input type="text" placeholder="Skin Name" id="editSkinName" value="${skin.name || ''}">
+                    </div>
+                    <div class="form-row-full">
+                        <input type="text" placeholder="Skin Image URL" id="editSkinImage" value="${skin.image || ''}" onchange="updateSkinPreviewFromForm()">
+                        <input type="text" placeholder="Script Download URL" id="editSkinScript" value="${skin.scriptUrl || ''}">
+                    </div>
+                </div>
+            `;
+        }
+
+        window.updateSkinPreviewFromForm = function() {
+            if (selectedRepIndex < 0 || selectedSkinIndex < 0) return;
+            const url = document.getElementById('editSkinImage').value;
+            currentHero.replacements[selectedRepIndex].skins[selectedSkinIndex].image = url;
+            renderSkins();
+            updatePreviewCard();
+        };
+
+        window.addSkin = function() {
+            if (selectedRepIndex < 0) {
+                showToast('Select a replacement first!', 'error');
+                return;
+            }
+            const rep = currentHero.replacements[selectedRepIndex];
+            if (!rep.skins) rep.skins = [];
+            rep.skins.push({ id: '', name: '', image: '', scriptUrl: '' });
+            selectedSkinIndex = rep.skins.length - 1;
+            renderSkins();
+            updatePreviewCard();
+            showSkinEditForm(selectedSkinIndex);
+            updateStatus('info', 'ℹ️', 'New skin added. Fill details below.');
+            setTimeout(() => {
+                const row = document.getElementById('skinsRow');
+                row.scrollLeft = row.scrollWidth;
+            }, 100);
+        };
+
+        // ===== SAVE =====
+        window.saveHero = async function() {
+            const name = document.getElementById('detailHeroName').value.trim();
+            const image = document.getElementById('heroImageUrl').value.trim();
+
+            if (!name) {
+                showToast('Hero name is required!', 'error');
+                document.getElementById('detailHeroName').focus();
+                return;
+            }
+
+            // Apply any pending edits from forms
+            if (selectedRepIndex >= 0) {
+                const repId = document.getElementById('editRepId');
+                const repName = document.getElementById('editRepName');
+                const repImage = document.getElementById('editRepImage');
+                if (repId && repName && repImage) {
+                    currentHero.replacements[selectedRepIndex].id = repId.value.trim();
+                    currentHero.replacements[selectedRepIndex].name = repName.value.trim();
+                    currentHero.replacements[selectedRepIndex].image = repImage.value.trim();
+                }
+            }
+            if (selectedRepIndex >= 0 && selectedSkinIndex >= 0) {
+                const skinId = document.getElementById('editSkinId');
+                const skinName = document.getElementById('editSkinName');
+                const skinImage = document.getElementById('editSkinImage');
+                const skinScript = document.getElementById('editSkinScript');
+                if (skinId && skinName && skinImage && skinScript) {
+                    currentHero.replacements[selectedRepIndex].skins[selectedSkinIndex].id = skinId.value.trim();
+                    currentHero.replacements[selectedRepIndex].skins[selectedSkinIndex].name = skinName.value.trim();
+                    currentHero.replacements[selectedRepIndex].skins[selectedSkinIndex].image = skinImage.value.trim();
+                    currentHero.replacements[selectedRepIndex].skins[selectedSkinIndex].scriptUrl = skinScript.value.trim();
+                }
+            }
+
+            // Validate replacements
+            for (let i = 0; i < currentHero.replacements.length; i++) {
+                const r = currentHero.replacements[i];
+                if (!r.id || !r.name) {
+                    showToast(`Replacement #${i+1} needs ID and Name!`, 'error');
+                    selectRep(i);
+                    return;
+                }
+            }
+
+            // Show loading state
+            const saveBtn = document.getElementById('saveBtn');
+            const originalText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<span>⏳</span> SAVING...';
+            saveBtn.disabled = true;
+
+            try {
+                if (isAddMode) {
+                    const docRef = await addDoc(heroesRef, {
+                        name: name,
+                        image: image,
+                        role: selectedRole,
+                        replacements: currentHero.replacements,
+                        createdAt: new Date().toISOString()
+                    });
+                    showToast('✅ Hero saved!', 'success');
+                    // Keep panel open briefly to show success, then close
+                    setTimeout(() => {
+                        closeDetail();
+                    }, 800);
+                } else {
+                    await updateDoc(doc(db, "heroes", currentHero.id), {
+                        name: name,
+                        image: image,
+                        role: selectedRole,
+                        replacements: currentHero.replacements
+                    });
+                    showToast('✅ Hero updated!', 'success');
+                    // For edit mode: DON'T close the panel!
+                    // Just refresh the data and keep editing
+                    // The onSnapshot will update heroes array automatically
+                    saveBtn.innerHTML = originalText;
+                    saveBtn.disabled = false;
+                }
+            } catch (err) {
+                console.error('Save error:', err);
+                showToast('❌ ' + (err.message || err.code), 'error');
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
+            }
+        };
+
+        // ===== DELETE =====
+        window.showDeleteConfirm = function(type, id, name) {
+            deleteTarget = { type, id };
+            document.getElementById('confirmText').textContent = `Delete "${name}"? This cannot be undone.`;
+            document.getElementById('confirmModal').classList.add('active');
+        };
+        window.closeConfirm = function() {
+            document.getElementById('confirmModal').classList.remove('active');
+            deleteTarget = null;
+        };
+        window.confirmDelete = async function() {
+            if (!deleteTarget) return;
+            try {
+                if (deleteTarget.type === 'hero') {
+                    await deleteDoc(doc(db, "heroes", deleteTarget.id));
+                    showToast('🗑️ Hero deleted!', 'success');
+                } else if (deleteTarget.type === 'rep') {
+                    currentHero.replacements.splice(deleteTarget.id, 1);
+                    selectedRepIndex = -1;
+                    selectedSkinIndex = -1;
+                    document.getElementById('repEditForm').innerHTML = '';
+                    document.getElementById('skinEditForm').innerHTML = '';
+                    document.getElementById('copySkinsSection').innerHTML = '';
+                    renderReplacements();
+                    hideSkins();
+                    resetPreviewCard();
+                    updateStatus('info', 'ℹ️', 'Replacement deleted. Click Save to apply.');
+                    showToast('🗑️ Replacement deleted (Save to apply)', 'success');
+                } else if (deleteTarget.type === 'skin') {
+                    currentHero.replacements[selectedRepIndex].skins.splice(deleteTarget.id, 1);
+                    selectedSkinIndex = -1;
+                    document.getElementById('skinEditForm').innerHTML = '';
+                    renderSkins();
+                    updatePreviewCard();
+                    updateStatus('info', 'ℹ️', 'Skin deleted. Click Save to apply.');
+                    showToast('🗑️ Skin deleted (Save to apply)', 'success');
+                }
+            } catch (err) {
+                showToast('❌ Delete failed: ' + (err.message || err.code), 'error');
+            }
+            closeConfirm();
+        };
+
+        // ===== TOAST =====
+        function showToast(text, type) {
+            const el = document.getElementById('toast');
+            el.textContent = text;
+            el.className = 'toast toast-' + type;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 3000);
+        }
+        window.showToast = showToast;
+    </script>
+</body>
+</html>
